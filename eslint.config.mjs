@@ -12,6 +12,7 @@ export default [
       sourceType: 'module',
       globals: {
         ...globals.browser,
+        module: 'readonly',
       },
     },
     rules: {
@@ -26,6 +27,16 @@ export default [
       sourceType: 'script',
       globals: {
         ...globals.node,
+      },
+    },
+  },
+  {
+    files: ['**/*.test.js', '**/*.spec.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        ...globals.jest,
       },
     },
   },
