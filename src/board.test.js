@@ -2,6 +2,7 @@ import { Board } from './board';
 import { Ship } from './ships';
 const s1 = new Ship(4);
 const b1 = new Board();
+const s2 = new Ship(3);
 
 test('ship coordinate', () => {
   b1.placeShip(s1, 3, 3, 'x');
@@ -21,7 +22,7 @@ test('found empty', () => {
 test('hit ship', () => {
   const hitSpot = b1.getAttack(3, 3);
   const hitSpot2 = b1.getAttack(3, 3);
-  expect(hitSpot2).toBe(0);
+  expect(hitSpot2).toBe(-1);
 });
 
 test('ship dead', () => {
@@ -35,4 +36,9 @@ test('ship dead', () => {
 test('hit water', () => {
   b1.getAttack(2, 3);
   expect(b1.getSquare(2, 3)).toBe(0);
+});
+
+test('open space', () => {
+  const valid = b1.placeShip(s2, 9, 9, 'x');
+  expect(valid).toBe(1);
 });

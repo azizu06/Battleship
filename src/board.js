@@ -21,6 +21,7 @@ export class Board {
         this.squares += 1;
       }
     }
+    return 1;
   }
   getAttack(row, col) {
     let point = `${row},${col}`;
