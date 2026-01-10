@@ -7,14 +7,14 @@ export class Board {
   }
   placeShip(ship, row, col, dir) {
     if (dir === 'x') {
-      if (this.checkSquares(ship, row, col, dir) === 0) return 0;
+      if (!this.checkSquares(ship, row, col, dir)) return 0;
       for (let i = 0; i < ship.length; i++) {
         const point = `${row},${col + i}`;
         this.data[point] = ship;
         this.squares += 1;
       }
     } else {
-      if (this.checkSquares(ship, row, col, dir) === 0) return 0;
+      if (!this.checkSquares(ship, row, col, dir)) return 0;
       for (let i = 0; i < ship.length; i++) {
         const point = `${row + i},${col}`;
         this.data[point] = ship;
@@ -44,13 +44,13 @@ export class Board {
       for (let i = 0; i < ship.length; i++) {
         const point = `${row},${col + i}`;
         const cols = col + i;
-        if (this.data[point] !== undefined || cols > this.cols) return 0;
+        if (this.data[point] !== undefined || cols > this.cols) return false;
       }
     } else {
       for (let i = 0; i < ship.length; i++) {
         const point = `${row + i},${col}`;
         const rows = row + i;
-        if (this.data[point] !== undefined || rows > this.rows) return 0;
+        if (this.data[point] !== undefined || rows > this.rows) return false;
       }
     }
   }
