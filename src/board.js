@@ -53,6 +53,7 @@ export class Board {
         if (this.data[point] !== undefined || rows > this.rows) return false;
       }
     }
+    return true;
   }
 
   allSunk() {
