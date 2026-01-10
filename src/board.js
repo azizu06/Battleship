@@ -1,19 +1,22 @@
-import { Ship } from './ships';
 export class Board {
   constructor() {
     this.data = {};
     this.squares = 0;
+    this.rows = 10;
+    this.cols = 10;
   }
   placeShip(ship, row, col, dir) {
     if (dir === 'x') {
+      if (this.checkSquares(ship, row, col, dir) === 0) return 0;
       for (let i = 0; i < ship.length; i++) {
-        let point = `${row},${col + i}`;
+        const point = `${row},${col + i}`;
         this.data[point] = ship;
         this.squares += 1;
       }
     } else {
+      if (this.checkSquares(ship, row, col, dir) === 0) return 0;
       for (let i = 0; i < ship.length; i++) {
-        let point = `${row + i},${col}`;
+        const point = `${row + i},${col}`;
         this.data[point] = ship;
         this.squares += 1;
       }
@@ -24,19 +27,44 @@ export class Board {
     let square = this.data[point];
     if (square !== undefined && square !== 0 && square !== 1) {
       this.squares -= 1;
-      const ship = square;
-      square = 1;
-      return ship;
-    } else if (square === undefined) {
-      square = 0;
+      this.data[point] = 1;
+      square.hit();
       return 1;
-    } else {
+    } else if (square === undefined) {
+      this.data[point] = 0;
       return 0;
+    } else {
+      return -1;
+    }
+  }
+
+  checkSquares(ship, row, col, dir) {
+    if (dir === 'x') {
+      for (let i = 0; i < ship.length; i++) {
+        const point = `${row},${col + i}`;
+        const cols = col + i;
+        if (this.data[point] !== undefined || cols > this.cols) return 0;
+      }
+    } else {
+      for (let i = 0; i < ship.length; i++) {
+        const point = `${row + i},${col}`;
+        const rows = row + i;
+        if (this.data[point] !== undefined || rows > this.rows) return 0;
+      }
     }
   }
 
   allSunk() {
     if (this.squares === 0) return true;
     return false;
+  }
+
+  getSquares() {
+    return this.squares;
+  }
+
+  getSquare(row, col) {
+    const point = `${row},${col}`;
+    return this.data[point];
   }
 }
