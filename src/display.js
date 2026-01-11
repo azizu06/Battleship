@@ -1,4 +1,4 @@
-import { player1, player2, buildBoard } from './controller';
+import { player1, player2, buildBoard, attack, activePlayer } from './controller';
 
 export function renderGrid(player) {
   const board = document.createElement('div');
@@ -8,7 +8,22 @@ export function renderGrid(player) {
       const square = document.createElement('div');
       square.classList.add('square');
       square.dataset.id = `${r},${c}`;
-      if (player.board.getSquare(r, c) !== undefined) square.innerText = '$';
+      const point = player.board.getSquare(r, c);
+      if (point !== undefined && player.real && point !== 1 && point !== 0) {
+        square.innerText = '$';
+      } else if (point === 1) {
+        square.innerText = 'X';
+      } else if (point === 0) {
+        square.innerText = 'O';
+      }
+      square.addEventListener('click', (e) => {
+        attack(e.target.dataset.id);
+        const active1 = activePlayer();
+        attachBoard(active1);
+        setTimeout(attack, 1000);
+        const active2 = activePlayer();
+        attachBoard(active2);
+      });
       board.appendChild(square);
     }
   }
@@ -19,6 +34,20 @@ export function initBoard() {
   const content = document.querySelector('.content');
   const grid = renderGrid(player1());
   content.appendChild(grid);
+}
+
+function attachBoard(player) {
+  if (player.real) {
+    const board = document.querySelector('.grid1');
+    board.innerHTML = '';
+    const grid = renderGrid(player);
+    board.appendChild(grid);
+  } else {
+    const board = document.querySelector('.grid2');
+    board.innerHTML = '';
+    const grid = renderGrid(player);
+    board.appendChild(grid);
+  }
 }
 
 export function renderStart() {
@@ -45,6 +74,8 @@ export function renderStart() {
   title2.innerText = 'Enemy Waters';
   const grid1 = renderGrid(player1());
   const grid2 = renderGrid(player2());
+  grid1.classList.add('grid1');
+  grid2.classList.add('grid2');
   board1.appendChild(title1);
   board1.appendChild(grid1);
   row2.appendChild(board1);
