@@ -22,23 +22,48 @@ export function renderGrid(player) {
       if (point !== undefined && player.real && point !== 1 && point !== 0) {
         square.innerText = '$';
       } else if (point === 1) {
-        square.innerText = 'X';
+        const shot = document.createElement('div');
+        shot.classList.add('hit');
+        square.appendChild(shot);
       } else if (point === 0) {
-        square.innerText = 'O';
+        const shot = document.createElement('div');
+        shot.classList.add('miss');
+        square.appendChild(shot);
       }
       if (!player.real) {
         square.addEventListener('click', (e) => {
+          const gameText = document.querySelector('.gameText');
           if (activePlayer() === player2() || checkGame() === false) return;
-          attack(e.target.dataset.id);
+          let res = attack(e.target.dataset.id);
+          gameText.innerText = `You fire a shot...`;
           setTimeout(() => {
             attachBoard(activePlayer());
-            if (gameOver(activePlayer())) return;
+            if (res === 0) {
+              gameText.innerText += ` and miss!`;
+            } else {
+              gameText.innerText += ` it's a hit!`;
+            }
+            if (gameOver(activePlayer())) {
+              gameText.innerText = `You win!`;
+              return;
+            }
           }, 1000);
           setTimeout(() => {
-            attack();
+            gameText.innerText = `Enemy fires a shot...`;
+          }, 2250);
+          setTimeout(() => {
+            res = attack();
+            if (res === 0) {
+              gameText.innerText += ` and misses!`;
+            } else {
+              gameText.innerText += ` it's a hit!`;
+            }
             attachBoard(activePlayer());
-            if (gameOver(activePlayer())) return;
-          }, 3000);
+            if (gameOver(activePlayer())) {
+              gameText.innerText = `Enemy wins!`;
+              return;
+            }
+          }, 3500);
         });
       }
       board.appendChild(square);
@@ -119,7 +144,7 @@ export function renderStart() {
   row2.classList.add('gameRow');
   const gameInfo = document.createElement('h3');
   gameInfo.classList.add('gameText');
-  gameInfo.innerText = `Player 1's turn`;
+  gameInfo.innerText = `Your turn`;
   row1.appendChild(gameInfo);
   content.appendChild(row1);
 
