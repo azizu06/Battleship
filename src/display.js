@@ -16,14 +16,17 @@ export function renderGrid(player) {
       } else if (point === 0) {
         square.innerText = 'O';
       }
-      square.addEventListener('click', (e) => {
-        attack(e.target.dataset.id);
-        const active1 = activePlayer();
-        attachBoard(active1);
-        setTimeout(attack, 1000);
-        const active2 = activePlayer();
-        attachBoard(active2);
-      });
+      if (!player.real) {
+        square.addEventListener('click', (e) => {
+          if (activePlayer() === player2()) return;
+          attack(e.target.dataset.id);
+          setTimeout(attachBoard, 1500, activePlayer());
+          setTimeout(() => {
+            attack();
+            attachBoard(activePlayer());
+          }, 4500);
+        });
+      }
       board.appendChild(square);
     }
   }
