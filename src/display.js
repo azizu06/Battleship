@@ -1,4 +1,4 @@
-import { player1, player2, buildBoard, attack, activePlayer } from './controller';
+import { player1, player2, buildBoard, attack, activePlayer, gameOver, gameOn } from './controller';
 
 export function renderGrid(player) {
   const board = document.createElement('div');
@@ -18,12 +18,16 @@ export function renderGrid(player) {
       }
       if (!player.real) {
         square.addEventListener('click', (e) => {
-          if (activePlayer() === player2()) return;
+          if (activePlayer() === player2() || gameOn() === false) return;
           attack(e.target.dataset.id);
-          setTimeout(attachBoard, 1500, activePlayer());
+          setTimeout(() => {
+            attachBoard(activePlayer());
+            if (gameOver(activePlayer())) return;
+          }, 1500);
           setTimeout(() => {
             attack();
             attachBoard(activePlayer());
+            if (gameOver(activePlayer())) return;
           }, 4500);
         });
       }
