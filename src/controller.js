@@ -8,73 +8,59 @@ let p2Ship = null;
 let gameRunning = false;
 
 export function randomBoard() {
-  let dir, row, col;
+  let pt = {
+    dir: '',
+    row: 0,
+    col: 0,
+  };
   for (let i = 0; i < 5; i++) {
     if (i == 2) {
       p1Ship = new Ship(3);
       p2Ship = new Ship(3);
-      dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
-      row = Math.floor(Math.random() * 10);
-      col = Math.floor(Math.random() * 10);
-      while (p1.board.randomCheck(p1Ship, row, col, dir) === false) {
-        row = Math.floor(Math.random() * 10);
-        col = Math.floor(Math.random() * 10);
-        dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
+      getPoint(pt);
+      while (p1.board.randomCheck(p1Ship, pt.row, pt.col, pt.dir) === false) {
+        getPoint(pt);
       }
-      p1.board.placeShip(p1Ship, row, col, dir);
-      dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
-      row = Math.floor(Math.random() * 10);
-      col = Math.floor(Math.random() * 10);
-      while (p2.board.randomCheck(p2Ship, row, col, dir) === false) {
-        row = Math.floor(Math.random() * 10);
-        col = Math.floor(Math.random() * 10);
-        dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
+      p1.board.placeShip(p1Ship, pt.row, pt.col, pt.dir);
+      getPoint(pt);
+      while (p2.board.randomCheck(p2Ship, pt.row, pt.col, pt.dir) === false) {
+        getPoint(pt);
       }
-      p2.board.placeShip(p2Ship, row, col, dir);
+      p2.board.placeShip(p2Ship, pt.row, pt.col, pt.dir);
     } else if (i > 2) {
       p1Ship = new Ship(i + 1);
       p2Ship = new Ship(i + 1);
-      dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
-      row = Math.floor(Math.random() * 10);
-      col = Math.floor(Math.random() * 10);
-      while (p1.board.randomCheck(p1Ship, row, col, dir) === false) {
-        row = Math.floor(Math.random() * 10);
-        col = Math.floor(Math.random() * 10);
-        dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
+      getPoint(pt);
+      while (p1.board.randomCheck(p1Ship, pt.row, pt.col, pt.dir) === false) {
+        getPoint(pt);
       }
-      p1.board.placeShip(p1Ship, row, col, dir);
-      dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
-      row = Math.floor(Math.random() * 10);
-      col = Math.floor(Math.random() * 10);
-      while (p2.board.randomCheck(p2Ship, row, col, dir) === false) {
-        row = Math.floor(Math.random() * 10);
-        col = Math.floor(Math.random() * 10);
-        dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
+      p1.board.placeShip(p1Ship, pt.row, pt.col, pt.dir);
+      getPoint(pt);
+      while (p2.board.randomCheck(p2Ship, pt.row, pt.col, pt.dir) === false) {
+        getPoint(pt);
       }
-      p2.board.placeShip(p2Ship, row, col, dir);
+      p2.board.placeShip(p2Ship, pt.row, pt.col, pt.dir);
     } else {
       p1Ship = new Ship(i + 2);
       p2Ship = new Ship(i + 2);
-      dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
-      row = Math.floor(Math.random() * 10);
-      col = Math.floor(Math.random() * 10);
-      while (p1.board.randomCheck(p1Ship, row, col, dir) === false) {
-        row = Math.floor(Math.random() * 10);
-        col = Math.floor(Math.random() * 10);
-        dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
+      getPoint(pt);
+      while (p1.board.randomCheck(p1Ship, pt.row, pt.col, pt.dir) === false) {
+        getPoint(pt);
       }
-      p1.board.placeShip(p1Ship, row, col, dir);
-      dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
-      row = Math.floor(Math.random() * 10);
-      col = Math.floor(Math.random() * 10);
-      while (p2.board.randomCheck(p2Ship, row, col, dir) === false) {
-        row = Math.floor(Math.random() * 10);
-        col = Math.floor(Math.random() * 10);
-        dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
+      p1.board.placeShip(p1Ship, pt.row, pt.col, pt.dir);
+      getPoint(pt);
+      while (p2.board.randomCheck(p2Ship, pt.row, pt.col, pt.dir) === false) {
+        getPoint(pt);
       }
-      p2.board.placeShip(p2Ship, row, col, dir);
+      p2.board.placeShip(p2Ship, pt.row, pt.col, pt.dir);
     }
   }
+}
+
+function getPoint(point) {
+  point.row = Math.floor(Math.random() * 10);
+  point.col = Math.floor(Math.random() * 10);
+  point.dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
 }
 
 export function attack(point = null) {
