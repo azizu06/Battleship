@@ -1,4 +1,14 @@
-import { player1, player2, buildBoard, attack, activePlayer, gameOver, gameOn } from './controller';
+import {
+  player1,
+  player2,
+  attack,
+  activePlayer,
+  gameOver,
+  gameOn,
+  randomBoard,
+  checkGame,
+  resetBoard,
+} from './controller';
 
 export function renderGrid(player) {
   const board = document.createElement('div');
@@ -8,7 +18,7 @@ export function renderGrid(player) {
       const square = document.createElement('div');
       square.classList.add('square');
       square.dataset.id = `${r},${c}`;
-      const point = player.board.getSquare(r, c);
+      const point = player.board.getSquare(`${r},${c}`);
       if (point !== undefined && player.real && point !== 1 && point !== 0) {
         square.innerText = '$';
       } else if (point === 1) {
@@ -18,17 +28,17 @@ export function renderGrid(player) {
       }
       if (!player.real) {
         square.addEventListener('click', (e) => {
-          if (activePlayer() === player2() || gameOn() === false) return;
+          if (activePlayer() === player2() || checkGame() === false) return;
           attack(e.target.dataset.id);
           setTimeout(() => {
             attachBoard(activePlayer());
             if (gameOver(activePlayer())) return;
-          }, 1500);
+          }, 1000);
           setTimeout(() => {
             attack();
             attachBoard(activePlayer());
             if (gameOver(activePlayer())) return;
-          }, 4500);
+          }, 3000);
         });
       }
       board.appendChild(square);
@@ -41,6 +51,48 @@ export function initBoard() {
   const content = document.querySelector('.content');
   const grid = renderGrid(player1());
   content.appendChild(grid);
+  const options = document.createElement('div');
+  options.classList.add('options');
+
+  const random = document.createElement('button');
+  random.innerText = 'Random';
+  let isRunning = false;
+  random.addEventListener('click', async () => {
+    if (isRunning) return;
+    clearBoard();
+    const board = document.querySelector('.board');
+    isRunning = true;
+    await randomBoard();
+    const grid = renderGrid(player1());
+    board.remove();
+    content.insertBefore(grid, content.lastElementChild);
+    isRunning = false;
+  });
+  options.appendChild(random);
+
+  const reset = document.createElement('button');
+  reset.innerText = 'Reset';
+  reset.addEventListener('click', clearBoard);
+  options.appendChild(reset);
+
+  const start = document.createElement('button');
+  start.innerText = 'Start';
+  start.addEventListener('click', () => {
+    if (player1().board.getSquares() !== 17) return;
+    gameOn();
+    renderStart();
+  });
+  options.appendChild(start);
+  content.appendChild(options);
+}
+
+function clearBoard() {
+  const content = document.querySelector('.content');
+  const board = document.querySelector('.board');
+  resetBoard();
+  const grid = renderGrid(player1());
+  board.remove();
+  content.insertBefore(grid, content.lastElementChild);
 }
 
 function attachBoard(player) {
@@ -58,7 +110,6 @@ function attachBoard(player) {
 }
 
 export function renderStart() {
-  if (player1().board.getSquares() !== 17) return;
   const content = document.querySelector('.content');
   content.innerHTML = '';
 
@@ -67,6 +118,7 @@ export function renderStart() {
   row1.classList.add('infoRow');
   row2.classList.add('gameRow');
   const gameInfo = document.createElement('h3');
+  gameInfo.classList.add('gameText');
   gameInfo.innerText = `Player 1's turn`;
   row1.appendChild(gameInfo);
   content.appendChild(row1);
@@ -92,6 +144,4 @@ export function renderStart() {
   content.appendChild(row2);
 }
 
-buildBoard();
 initBoard();
-renderStart();
