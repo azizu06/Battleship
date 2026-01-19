@@ -23,8 +23,7 @@ export class Board {
     }
     return 1;
   }
-  getAttack(row, col) {
-    let point = `${row},${col}`;
+  getAttack(point) {
     let square = this.data[point];
     if (square !== undefined && square !== 0 && square !== 1) {
       this.squares -= 1;
