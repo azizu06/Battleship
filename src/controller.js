@@ -1,31 +1,78 @@
 import { Ship } from './ships';
 import { Player } from './player';
 
-let p1 = null;
-let p2 = null;
-let gameRunning = true;
+let p1 = new Player(true, true);
+let p2 = new Player(false, false);
+let p1Ship = null;
+let p2Ship = null;
+let gameRunning = false;
 
-export function buildBoard() {
-  p1 = new Player(true, true);
-  p2 = new Player(false, false);
-  let p1Ship = null;
-  let p2Ship = null;
+export function randomBoard() {
+  let dir, row, col;
   for (let i = 0; i < 5; i++) {
     if (i == 2) {
       p1Ship = new Ship(3);
       p2Ship = new Ship(3);
-      p1.board.placeShip(p1Ship, i, i, 'x');
-      p2.board.placeShip(p2Ship, i, i, 'x');
+      dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
+      row = Math.floor(Math.random() * 10);
+      col = Math.floor(Math.random() * 10);
+      while (p1.board.randomCheck(p1Ship, row, col, dir) === false) {
+        row = Math.floor(Math.random() * 10);
+        col = Math.floor(Math.random() * 10);
+        dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
+      }
+      p1.board.placeShip(p1Ship, row, col, dir);
+      dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
+      row = Math.floor(Math.random() * 10);
+      col = Math.floor(Math.random() * 10);
+      while (p2.board.randomCheck(p2Ship, row, col, dir) === false) {
+        row = Math.floor(Math.random() * 10);
+        col = Math.floor(Math.random() * 10);
+        dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
+      }
+      p2.board.placeShip(p2Ship, row, col, dir);
     } else if (i > 2) {
       p1Ship = new Ship(i + 1);
       p2Ship = new Ship(i + 1);
-      p1.board.placeShip(p1Ship, i, i, 'x');
-      p2.board.placeShip(p2Ship, i, i, 'x');
+      dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
+      row = Math.floor(Math.random() * 10);
+      col = Math.floor(Math.random() * 10);
+      while (p1.board.randomCheck(p1Ship, row, col, dir) === false) {
+        row = Math.floor(Math.random() * 10);
+        col = Math.floor(Math.random() * 10);
+        dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
+      }
+      p1.board.placeShip(p1Ship, row, col, dir);
+      dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
+      row = Math.floor(Math.random() * 10);
+      col = Math.floor(Math.random() * 10);
+      while (p2.board.randomCheck(p2Ship, row, col, dir) === false) {
+        row = Math.floor(Math.random() * 10);
+        col = Math.floor(Math.random() * 10);
+        dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
+      }
+      p2.board.placeShip(p2Ship, row, col, dir);
     } else {
       p1Ship = new Ship(i + 2);
       p2Ship = new Ship(i + 2);
-      p1.board.placeShip(p1Ship, i, i, 'x');
-      p2.board.placeShip(p2Ship, i, i, 'x');
+      dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
+      row = Math.floor(Math.random() * 10);
+      col = Math.floor(Math.random() * 10);
+      while (p1.board.randomCheck(p1Ship, row, col, dir) === false) {
+        row = Math.floor(Math.random() * 10);
+        col = Math.floor(Math.random() * 10);
+        dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
+      }
+      p1.board.placeShip(p1Ship, row, col, dir);
+      dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
+      row = Math.floor(Math.random() * 10);
+      col = Math.floor(Math.random() * 10);
+      while (p2.board.randomCheck(p2Ship, row, col, dir) === false) {
+        row = Math.floor(Math.random() * 10);
+        col = Math.floor(Math.random() * 10);
+        dir = Math.floor(Math.random() * 2) === 0 ? 'x' : 'y';
+      }
+      p2.board.placeShip(p2Ship, row, col, dir);
     }
   }
 }
@@ -59,4 +106,13 @@ export function gameOver(player) {
   }
 }
 
-export const gameOn = () => gameRunning;
+export const checkGame = () => gameRunning;
+
+export function gameOn() {
+  gameRunning = true;
+}
+
+export function resetBoard() {
+  p1.board.reset();
+  p2.board.reset();
+}
