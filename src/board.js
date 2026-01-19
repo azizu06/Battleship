@@ -142,8 +142,7 @@ export class Board {
     return this.squares;
   }
 
-  getSquare(row, col) {
-    const point = `${row},${col}`;
+  getSquare(point) {
     return this.data[point];
   }
 
