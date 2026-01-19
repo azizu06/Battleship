@@ -3,6 +3,7 @@ import { Player } from './player';
 
 let p1 = null;
 let p2 = null;
+let gameRunning = true;
 
 export function buildBoard() {
   p1 = new Player(true, true);
@@ -50,3 +51,12 @@ export const player2 = () => p2;
 export function activePlayer() {
   return p1.turn ? p1 : p2;
 }
+
+export function gameOver(player) {
+  if (player.board.allSunk()) {
+    gameRunning = false;
+    return true;
+  }
+}
+
+export const gameOn = () => gameRunning;
