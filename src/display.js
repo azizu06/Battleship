@@ -19,13 +19,13 @@ export function renderGrid(player) {
       square.classList.add('square');
       square.dataset.id = `${r},${c}`;
       const point = player.board.getSquare(`${r},${c}`);
-      if (point !== undefined && player.real && point !== 1 && point !== 0) {
+      if (point !== undefined && player.real && point.status !== 1 && point.status !== 0) {
         square.innerText = '$';
-      } else if (point === 1) {
+      } else if (point.status === 1) {
         const shot = document.createElement('div');
         shot.classList.add('hit');
         square.appendChild(shot);
-      } else if (point === 0) {
+      } else if (point.status === 0) {
         const shot = document.createElement('div');
         shot.classList.add('miss');
         square.appendChild(shot);
@@ -81,17 +81,13 @@ export function initBoard() {
 
   const random = document.createElement('button');
   random.innerText = 'Random';
-  let isRunning = false;
-  random.addEventListener('click', async () => {
-    if (isRunning) return;
+  random.addEventListener('click', () => {
     clearBoard();
     const board = document.querySelector('.board');
-    isRunning = true;
-    await randomBoard();
+    randomBoard();
     const grid = renderGrid(player1());
     board.remove();
     content.insertBefore(grid, content.lastElementChild);
-    isRunning = false;
   });
   options.appendChild(random);
 
