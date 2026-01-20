@@ -65,23 +65,24 @@ function getPoint(point) {
 
 export function attack(point = null) {
   if (point) {
-    if (p2.board.getSquare(point) === 1 || p2.board.getSquare(point) === 0) return;
-    p2.board.getAttack(point);
+    if (p2.board.getSquare(point).status === 1 || p2.board.getSquare(point).status === 0) return -1;
+    const res = p2.board.getAttack(point);
     p1.turn = !p1.turn;
     p2.turn = !p2.turn;
-    return;
+    return res;
   } else {
     let row = Math.floor(Math.random() * 10);
     let col = Math.floor(Math.random() * 10);
     let square = `${row},${col}`;
-    while (p1.board.getSquare(square) === 1 || p1.board.getSquare(square) === 0) {
+    while (p1.board.getSquare(square).status === 1 || p1.board.getSquare(square).status === 0) {
       row = Math.floor(Math.random() * 10);
       col = Math.floor(Math.random() * 10);
       square = `${row},${col}`;
     }
-    p1.board.getAttack(square);
+    const res = p1.board.getAttack(square);
     p2.turn = !p2.turn;
     p1.turn = !p1.turn;
+    return res;
   }
 }
 
