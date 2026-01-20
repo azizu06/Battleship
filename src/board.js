@@ -11,14 +11,20 @@ export class Board {
       if (!this.checkSquares(ship, row, col, dir)) return 0;
       for (let i = 0; i < ship.length; i++) {
         const point = `${row},${col + i}`;
-        this.data[point] = ship;
+        this.data[point] = {
+          ship: ship,
+          status: -1,
+        };
         this.squares += 1;
       }
     } else {
       if (!this.checkSquares(ship, row, col, dir)) return 0;
       for (let i = 0; i < ship.length; i++) {
         const point = `${row + i},${col}`;
-        this.data[point] = ship;
+        this.data[point] = {
+          ship: ship,
+          status: -1,
+        };
         this.squares += 1;
       }
     }
@@ -27,13 +33,14 @@ export class Board {
 
   getAttack(point) {
     let square = this.data[point];
-    if (square !== undefined && square !== 0 && square !== 1) {
+    if (square !== undefined && square.status !== 0 && square.status !== 1) {
       this.squares -= 1;
-      this.data[point] = 1;
-      square.hit();
+      this.data[point].status = 1;
+      square.ship.hit();
+      if (square.ship.sunk()) return square.ship;
       return 1;
     } else if (square === undefined) {
-      this.data[point] = 0;
+      this.data[point] = { status: 0 };
       return 0;
     } else {
       return -1;
