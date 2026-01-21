@@ -86,8 +86,12 @@ function clickSquare(cell) {
 
 export function initBoard() {
   const content = document.querySelector('.content');
+  const startTitle = document.createElement('h2');
+  startTitle.innerText = 'Place Your Ship';
+  content.append(startTitle);
+  const placer = document.createElement('div');
+  placer.classList.add('placer');
   const grid = renderGrid(player1());
-  content.appendChild(grid);
   const options = document.createElement('div');
   options.classList.add('options');
 
@@ -101,12 +105,12 @@ export function initBoard() {
     board.remove();
     content.insertBefore(grid, content.lastElementChild);
   });
-  options.appendChild(random);
+  placer.appendChild(random);
 
   const reset = document.createElement('button');
   reset.innerText = 'Reset';
   reset.addEventListener('click', clearBoard);
-  options.appendChild(reset);
+  placer.appendChild(reset);
 
   const start = document.createElement('button');
   start.innerText = 'Start';
@@ -115,6 +119,8 @@ export function initBoard() {
     gameOn();
     renderStart();
   });
+  content.appendChild(placer);
+  content.appendChild(grid);
   options.appendChild(start);
   content.appendChild(options);
 }
@@ -148,13 +154,24 @@ export function renderStart() {
 
   const row1 = document.createElement('div');
   const row2 = document.createElement('div');
+  const row3 = document.createElement('div');
   row1.classList.add('infoRow');
   row2.classList.add('gameRow');
+  row3.classList.add('footer');
   const gameInfo = document.createElement('h3');
   gameInfo.classList.add('gameText');
   gameInfo.innerText = `Your turn`;
   row1.appendChild(gameInfo);
   content.appendChild(row1);
+
+  const restart = document.createElement('button');
+  restart.innerText = 'Restart';
+  restart.addEventListener('click', () => {
+    resetBoard();
+    content.innerHTML = '';
+    initBoard();
+  });
+  row3.appendChild(restart);
 
   const board1 = document.createElement('div');
   const board2 = document.createElement('div');
@@ -175,4 +192,5 @@ export function renderStart() {
   board2.appendChild(grid2);
   row2.appendChild(board2);
   content.appendChild(row2);
+  content.appendChild(row3);
 }
