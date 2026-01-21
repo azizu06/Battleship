@@ -18,7 +18,7 @@ export class Ship {
     if (this.length === this.hits) this.sunk = true;
   }
 
-  sunk() {
+  dead() {
     return this.sunk;
   }
 }
