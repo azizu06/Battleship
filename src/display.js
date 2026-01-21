@@ -58,10 +58,10 @@ function clickSquare(cell) {
       gameText.innerText = `You win!`;
       return;
     }
-  }, 100);
+  }, 750);
   setTimeout(() => {
     gameText.innerText = `Enemy fires a shot...`;
-  }, 250);
+  }, 2000);
   setTimeout(() => {
     res = attack();
     if (res === 0) {
@@ -81,7 +81,7 @@ function clickSquare(cell) {
       gameText.innerText = `Enemy wins!`;
       return;
     }
-  }, 3500);
+  }, 3250);
 }
 
 export function initBoard() {
