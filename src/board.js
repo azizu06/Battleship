@@ -157,4 +157,9 @@ export class Board {
     this.data = {};
     this.squares = 0;
   }
+
+  findShip(ship) {
+    const points = Object.keys(this.data).filter((point) => this.data[point].ship === ship);
+    return points;
+  }
 }
