@@ -19,13 +19,13 @@ export function renderGrid(player) {
       square.classList.add('square');
       square.dataset.id = `${r},${c}`;
       const point = player.board.getSquare(`${r},${c}`);
-      if (point !== undefined && player.real && point.status !== 1 && point.status !== 0) {
+      if (point?.ship !== undefined && player.real && point?.status !== 1 && point?.status !== 0) {
         square.innerText = '$';
-      } else if (point.status === 1) {
+      } else if (point?.status === 1) {
         const shot = document.createElement('div');
         shot.classList.add('hit');
         square.appendChild(shot);
-      } else if (point.status === 0) {
+      } else if (point?.status === 0) {
         const shot = document.createElement('div');
         shot.classList.add('miss');
         square.appendChild(shot);
@@ -164,5 +164,3 @@ export function renderStart() {
   row2.appendChild(board2);
   content.appendChild(row2);
 }
-
-initBoard();
