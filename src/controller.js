@@ -119,7 +119,7 @@ function aimBot() {
         flipTurn();
         return res;
       } else if (p1.board.checkBounds(`${r},${maxC + 1}`) && !shotSet.has(`${r},${maxC + 1}`)) {
-        shotSet.add(`${r},${minC + 1}`);
+        shotSet.add(`${r},${maxC + 1}`);
         const res = p1.board.getAttack(`${r},${maxC + 1}`);
         flipTurn();
         return res;
@@ -136,7 +136,7 @@ function aimBot() {
         flipTurn();
         return res;
       } else if (p1.board.checkBounds(`${MaxR + 1},${c}`) && !shotSet.has(`${MaxR + 1},${c}`)) {
-        shotSet.add(`${minR + 1},${c}`);
+        shotSet.add(`${MaxR + 1},${c}`);
         const res = p1.board.getAttack(`${MaxR + 1},${c}`);
         flipTurn();
         return res;
