@@ -8,6 +8,8 @@ import {
   randomBoard,
   checkGame,
   resetBoard,
+  resetHunt,
+  addHit,
 } from './controller';
 
 export function renderGrid(player) {
@@ -52,7 +54,17 @@ function clickSquare(cell) {
     if (res === 0) {
       gameText.innerText += ` and miss!`;
     } else {
-      gameText.innerText += ` it's a hit!`;
+      if (res !== 1) {
+        gameText.innerText += ` and sunk the enemy's ship!`;
+        const points = player2().board.findShip(res);
+        const board = document.querySelector('.grid2');
+        const squares = points.map((id) => board.querySelector(`div[data-id="${id}"]`));
+        squares.forEach((square) => {
+          square.classList.add('ship');
+        });
+      } else {
+        gameText.innerText += ` and it's a hit!`;
+      }
     }
     if (gameOver(activePlayer())) {
       gameText.innerText = `You win!`;
@@ -67,13 +79,12 @@ function clickSquare(cell) {
     if (res === 0) {
       gameText.innerText += ` and misses!`;
     } else {
-      gameText.innerText += ` it's a hit!`;
-      if (res !== 1) {
-        const points = player2().board.findShip(res);
-        const squares = points.map((id) => document.querySelector(`div[data-id="${id}"]`));
-        squares.forEach((square) => {
-          square.classList.add('ship');
-        });
+      if (res === 1) {
+        gameText.innerText += ` it's a hit!`;
+        addHit(res);
+      } else {
+        gameText.innerText += ` and sinks your ship!`;
+        resetHunt();
       }
     }
     attachBoard(activePlayer());
