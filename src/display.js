@@ -10,6 +10,7 @@ import {
   resetBoard,
   resetHunt,
   addHit,
+  restartGame,
 } from './controller';
 
 export function renderGrid(player) {
@@ -34,7 +35,7 @@ export function renderGrid(player) {
       }
       if (!player.real) {
         square.addEventListener('click', (e) => {
-          const cell = e.target;
+          const cell = e.currentTarget;
           clickSquare(cell);
         });
       }
@@ -48,13 +49,14 @@ function clickSquare(cell) {
   const gameText = document.querySelector('.gameText');
   if (activePlayer() === player2() || checkGame() === false) return;
   let res = attack(cell.dataset.id);
+  if (res === -1) return;
   gameText.innerText = `You fire a shot...`;
   setTimeout(() => {
     attachBoard(activePlayer());
     if (res === 0) {
       gameText.innerText += ` and miss!`;
     } else {
-      if (res !== 1) {
+      if (typeof res !== 'string') {
         gameText.innerText += ` and sunk the enemy's ship!`;
         const points = player2().board.findShip(res);
         const board = document.querySelector('.grid2');
@@ -79,7 +81,7 @@ function clickSquare(cell) {
     if (res === 0) {
       gameText.innerText += ` and misses!`;
     } else {
-      if (res === 1) {
+      if (typeof res === 'string') {
         gameText.innerText += ` it's a hit!`;
         addHit(res);
       } else {
@@ -178,7 +180,7 @@ export function renderStart() {
   const restart = document.createElement('button');
   restart.innerText = 'Restart';
   restart.addEventListener('click', () => {
-    resetBoard();
+    restartGame();
     content.innerHTML = '';
     initBoard();
   });
