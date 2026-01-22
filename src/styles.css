@@ -64,7 +64,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: var(--space-5);
+  padding: var(--space-4);
   border-radius: var(--radius-lg);
   background: linear-gradient(135deg, #ffffff 0%, #e6f1f9 100%);
   border: 1px solid var(--panel-border);
