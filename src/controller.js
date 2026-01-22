@@ -3,18 +3,18 @@ import { Player } from './player';
 
 let p1 = new Player(true, true);
 let p2 = new Player(false, false);
-let p1Ship = null;
-let p2Ship = null;
-let gameRunning = false;
+let p1Ship,
+  p2Ship = null;
+let gameRunning,
+  madeStack = false;
 let shotSet = new Set();
-let curHits = [];
-let targets = [];
+let curHits,
+  targets = [];
 let pos = '';
 let minC,
   minR = Infinity;
 let maxC,
   MaxR = -Infinity;
-let hasRun = false;
 
 export function randomBoard() {
   let pt = {
@@ -101,7 +101,7 @@ export function attack(point = null) {
 }
 
 function aimBot() {
-  if (!hasRun) {
+  if (!madeStack) {
     const [r, c] = curHits[0].split(',').map(Number);
     let down = `${r + 1},${c}`;
     let left = `${r},${c - 1}`;
@@ -111,7 +111,7 @@ function aimBot() {
     targets.push(left);
     targets.push(right);
     targets.push(up);
-    hasRun = true;
+    madeStack = true;
   }
 
   if (curHits.length < 2) {
@@ -229,7 +229,7 @@ export function resetHunt() {
   (maxC, (MaxR = -Infinity));
   (curHits, (targets = []));
   pos = '';
-  hasRun = false;
+  madeStack = false;
 }
 
 export function addHit(point) {
