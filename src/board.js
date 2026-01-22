@@ -42,6 +42,8 @@ export class Board {
     } else if (square === undefined) {
       this.data[point] = { status: 0 };
       return { type: 'miss' };
+    } else {
+      return { type: 'invalid' };
     }
   }
 
@@ -62,77 +64,54 @@ export class Board {
     return true;
   }
 
+  spotTaken(pts) {
+    for (const pt of pts) {
+      if (pt && this.data[pt]?.ship !== undefined) return true;
+    }
+    return false;
+  }
+
+  pushIfValid(list, r, c) {
+    if (r < 0 || r > this.rows || c < 0 || c > this.cols) return;
+    list.push(`${r},${c}`);
+  }
+
   randomCheck(ship, row, col, dir) {
-    let invalidC1, invalidC2, invalidR1, invalidR2;
     if (dir === 'x') {
       for (let i = 0; i < ship.length; i++) {
+        const invalidPts = [];
         if (i === 0) {
-          if (col - 1 >= 0) invalidC1 = `${row},${col - 1}`;
-          if (row + 1 < this.rows) invalidR1 = `${row + 1},${col}`;
-          if (row - 1 >= 0) invalidR2 = `${row + 1},${col}`;
-          if (
-            (invalidC1 && this.data[invalidC1]?.ship !== undefined) ||
-            (invalidR1 && this.data[invalidR1]?.ship !== undefined) ||
-            (invalidR2 && this.data[invalidR2]?.ship !== undefined)
-          )
-            return false;
+          this.pushIfValid(invalidPts, row, col - 1);
+          this.pushIfValid(invalidPts, row + 1, col);
+          this.pushIfValid(invalidPts, row - 1, col);
         } else if (i === ship.length - 1) {
-          if (col + 1 + i < this.cols) invalidC1 = `${row},${col + 1 + i}`;
-          if (row + 1 < this.rows) invalidR1 = `${row + 1},${col + i}`;
-          if (row - 1 >= 0) invalidR2 = `${row - 1},${col + i}`;
-          if (
-            (invalidC1 && this.data[invalidC1]?.ship !== undefined) ||
-            (invalidR1 && this.data[invalidR1]?.ship !== undefined) ||
-            (invalidR2 && this.data[invalidR2]?.ship !== undefined)
-          )
-            return false;
+          this.pushIfValid(invalidPts, row, col + 1 + i);
+          this.pushIfValid(invalidPts, row + 1, col + i);
+          this.pushIfValid(invalidPts, row - 1, col + i);
         } else {
-          if (row + 1 < this.rows) invalidR1 = `${row + 1},${col + i}`;
-          if (row - 1 >= 0) invalidR2 = `${row - 1},${col + i}`;
-          if (
-            (invalidR1 && this.data[invalidR1]?.ship !== undefined) ||
-            (invalidR2 && this.data[invalidR2]?.ship !== undefined)
-          )
-            return false;
+          this.pushIfValid(invalidPts, row + 1, col + i);
+          this.pushIfValid(invalidPts, row - 1, col + i);
         }
-        const point = `${row},${col + i}`;
-        const cols = col + i;
-        if (this.data[point]?.ship !== undefined || cols > this.cols) return false;
+        this.pushIfValid(invalidPts, row, col + i);
+        if (this.spotTaken(invalidPts)) return false;
       }
-    } else {
+    } else if (dir === 'y') {
       for (let i = 0; i < ship.length; i++) {
+        const invalidPts = [];
         if (i === 0) {
-          if (col - 1 >= 0) invalidC1 = `${row},${col - 1}`;
-          if (col + 1 < this.cols) invalidC2 = `${row},${col + 1}`;
-          if (row - 1 >= 0) invalidR1 = `${row - 1},${col}`;
-          if (
-            (invalidC1 && this.data[invalidC1]?.ship !== undefined) ||
-            (invalidR1 && this.data[invalidR1]?.ship !== undefined) ||
-            (invalidC2 && this.data[invalidC2]?.ship !== undefined)
-          )
-            return false;
+          this.pushIfValid(invalidPts, row, col - 1);
+          this.pushIfValid(invalidPts, row, col + 1);
+          this.pushIfValid(invalidPts, row - 1, col);
         } else if (i === ship.length - 1) {
-          if (col - 1 >= 0) invalidC1 = `${row + i},${col - 1}`;
-          if (col + 1 < this.cols) invalidC2 = `${row + i},${col + 1}`;
-          if (row + 1 + i < this.rows) invalidR1 = `${row + 1 + i},${col}`;
-          if (
-            (invalidC1 && this.data[invalidC1]?.ship !== undefined) ||
-            (invalidR1 && this.data[invalidR1]?.ship !== undefined) ||
-            (invalidC2 && this.data[invalidC2]?.ship !== undefined)
-          )
-            return false;
+          this.pushIfValid(invalidPts, row + i, col - 1);
+          this.pushIfValid(invalidPts, row + i, col + 1);
+          this.pushIfValid(invalidPts, row + 1 + i, col);
         } else {
-          if (col - 1 >= 0) invalidC1 = `${row + i},${col - 1}`;
-          if (col + 1 < this.cols) invalidC2 = `${row + i},${col + 1}`;
-          if (
-            (invalidC1 && this.data[invalidC1]?.ship !== undefined) ||
-            (invalidC2 && this.data[invalidC2]?.ship !== undefined)
-          )
-            return false;
+          this.pushIfValid(invalidPts, row + i, col - 1);
+          this.pushIfValid(invalidPts, row + i, col + 1);
         }
-        const point = `${row + i},${col}`;
-        const rows = row + i;
-        if (this.data[point]?.ship !== undefined || rows > this.rows) return false;
+        this.pushIfValid(invalidPts, row + i, col);
+        if (this.spotTaken(invalidPts)) return false;
       }
     }
     return true;
