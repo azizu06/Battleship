@@ -76,77 +76,69 @@ function shootRandom() {
     col = Math.floor(Math.random() * 10);
     square = `${row},${col}`;
   }
-  shotSet.add(square);
-  const res = p1.board.getAttack(square);
+  return takeShot(square);
+}
+
+function makeTargets() {
+  const [r, c] = curHits[0].split(',').map(Number);
+  targets.push(`${r + 1},${c}`);
+  targets.push(`${r},${c - 1}`);
+  targets.push(`${r},${c + 1}`);
+  targets.push(`${r - 1},${c}`);
+  madeStack = true;
+}
+
+function takeShot(point) {
+  shotSet.add(point);
+  const res = p1.board.getAttack(point);
   flipTurn();
   return res;
 }
 
-function aimBot() {
-  if (!madeStack) {
-    const [r, c] = curHits[0].split(',').map(Number);
-    let down = `${r + 1},${c}`;
-    let left = `${r},${c - 1}`;
-    let up = `${r - 1},${c}`;
-    let right = `${r},${c + 1}`;
-    targets.push(down);
-    targets.push(left);
-    targets.push(right);
-    targets.push(up);
-    madeStack = true;
+function nextTarget() {
+  while (targets.length && !validTarget(targets.at(-1))) {
+    targets.pop();
   }
+  return targets.length ? targets.at(-1) : null;
+}
+
+function aimBot() {
+  if (!madeStack) makeTargets();
 
   if (curHits.length < 2) {
-    if (targets.length === 0) return -1;
-    while (!p1.board.checkBounds(targets.at(-1)) || shotSet.has(targets.at(-1))) {
-      targets.pop();
-    }
-    if (targets.length === 0) return -1;
-    shotSet.add(targets.at(-1));
-    const res = p1.board.getAttack(targets.at(-1));
+    const target = nextTarget();
+    if (!target) return -1;
     targets.pop();
-    flipTurn();
-    return res;
+    return takeShot(target);
   }
   if (curHits.length === 2) pos = findDir();
   if (curHits.length > 1) {
-    if (pos === 'H') {
-      const r = Number(curHits[0].split(',')[0]);
-      minMaxC();
-      if (p1.board.checkBounds(`${r},${minC - 1}`) && !shotSet.has(`${r},${minC - 1}`)) {
-        shotSet.add(`${r},${minC - 1}`);
-        const res = p1.board.getAttack(`${r},${minC - 1}`);
-        flipTurn();
-        return res;
-      } else if (p1.board.checkBounds(`${r},${maxC + 1}`) && !shotSet.has(`${r},${maxC + 1}`)) {
-        shotSet.add(`${r},${maxC + 1}`);
-        const res = p1.board.getAttack(`${r},${maxC + 1}`);
-        flipTurn();
-        return res;
-      } else {
-        resetHunt();
-        return -1;
-      }
-    } else if (pos === 'V') {
-      const c = Number(curHits[0].split(',')[1]);
-      minMaxR();
-      if (p1.board.checkBounds(`${minR - 1},${c}`) && !shotSet.has(`${minR - 1},${c}`)) {
-        shotSet.add(`${minR - 1},${c}`);
-        const res = p1.board.getAttack(`${minR - 1},${c}`);
-        flipTurn();
-        return res;
-      } else if (p1.board.checkBounds(`${MaxR + 1},${c}`) && !shotSet.has(`${MaxR + 1},${c}`)) {
-        shotSet.add(`${MaxR + 1},${c}`);
-        const res = p1.board.getAttack(`${MaxR + 1},${c}`);
-        flipTurn();
-        return res;
-      } else {
-        resetHunt();
-        return -1;
-      }
-    }
+    if (pos === 'H') return shootHorizontal();
+    if (pos === 'V') return shootVertical();
+    return -1;
   }
+}
+
+function shootHorizontal() {
+  const r = Number(curHits[0].split(',')[0]);
+  minMaxC();
+  if (validTarget(`${r},${minC - 1}`)) return takeShot(`${r},${minC - 1}`);
+  if (validTarget(`${r},${maxC + 1}`)) return takeShot(`${r},${maxC + 1}`);
+  resetHunt();
   return -1;
+}
+
+function shootVertical() {
+  const c = Number(curHits[0].split(',')[1]);
+  minMaxR();
+  if (validTarget(`${minR - 1},${c}`)) return takeShot(`${minR - 1},${c}`);
+  if (validTarget(`${MaxR + 1},${c}`)) return takeShot(`${MaxR + 1},${c}`);
+  resetHunt();
+  return -1;
+}
+
+function validTarget(point) {
+  return point && p1.board.checkBounds(point) && !shotSet.has(point);
 }
 
 function flipTurn() {
