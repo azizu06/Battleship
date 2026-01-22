@@ -37,11 +37,11 @@ export class Board {
       this.squares -= 1;
       this.data[point].status = 1;
       square.ship.hit();
-      if (square.ship.dead()) return square.ship;
-      return point;
+      if (square.ship.dead()) return { type: 'sink', val: square.ship };
+      return { type: 'hit', val: point };
     } else if (square === undefined) {
       this.data[point] = { status: 0 };
-      return 0;
+      return { type: 'miss' };
     }
   }
 
