@@ -47,23 +47,6 @@ export class Board {
     }
   }
 
-  checkSquares(ship, row, col, dir) {
-    if (dir === 'x') {
-      for (let i = 0; i < ship.length; i++) {
-        const point = `${row},${col + i}`;
-        const cols = col + i;
-        if (this.data[point]?.ship !== undefined || cols > this.cols) return false;
-      }
-    } else {
-      for (let i = 0; i < ship.length; i++) {
-        const point = `${row + i},${col}`;
-        const rows = row + i;
-        if (this.data[point]?.ship !== undefined || rows > this.rows) return false;
-      }
-    }
-    return true;
-  }
-
   spotTaken(pts) {
     for (const pt of pts) {
       if (pt && this.data[pt]?.ship !== undefined) return true;
