@@ -22,17 +22,7 @@ export function renderGrid(player) {
       square.classList.add('square');
       square.dataset.id = `${r},${c}`;
       const point = player.board.getSquare(`${r},${c}`);
-      if ((player.real && point?.ship !== undefined) || (!player.real && point?.ship?.sunk))
-        square.classList.add('ship');
-      if (point?.status === 1) {
-        const shot = document.createElement('div');
-        shot.classList.add('hit');
-        square.appendChild(shot);
-      } else if (point?.status === 0) {
-        const shot = document.createElement('div');
-        shot.classList.add('miss');
-        square.appendChild(shot);
-      }
+      cellMarker(player, point, square);
       if (!player.real) {
         square.addEventListener('click', (e) => {
           const cell = e.currentTarget;
@@ -45,6 +35,20 @@ export function renderGrid(player) {
   return board;
 }
 
+function cellMarker(player, point, square) {
+  if ((player.real && point?.ship !== undefined) || (!player.real && point?.ship?.sunk))
+    square.classList.add('ship');
+  if (point?.status === 1) {
+    const shot = document.createElement('div');
+    shot.classList.add('hit');
+    square.appendChild(shot);
+  } else if (point?.status === 0) {
+    const shot = document.createElement('div');
+    shot.classList.add('miss');
+    square.appendChild(shot);
+  }
+}
+
 function clickSquare(cell) {
   const gameText = document.querySelector('.gameText');
   if (activePlayer() === player2() || checkGame() === false) return;
@@ -53,21 +57,12 @@ function clickSquare(cell) {
   gameText.innerText = `You fire a shot...`;
   setTimeout(() => {
     attachBoard(activePlayer());
-    if (res === 0) {
-      gameText.innerText += ` and miss!`;
-    } else {
-      if (typeof res !== 'string') {
-        gameText.innerText += ` and sunk the enemy's ship!`;
-        const points = player2().board.findShip(res);
-        const board = document.querySelector('.grid2');
-        const squares = points.map((id) => board.querySelector(`div[data-id="${id}"]`));
-        squares.forEach((square) => {
-          square.classList.add('ship');
-        });
-      } else {
-        gameText.innerText += ` and it's a hit!`;
-      }
+    if (res.type === 'miss') gameText.innerText += ` and miss!`;
+    if (res.type === 'sink') {
+      gameText.innerText += ` and sunk the enemy's ship!`;
+      revealShip(res.val);
     }
+    if (res.type === 'hit') gameText.innerText += ` and it's a hit!`;
     if (gameOver(activePlayer())) {
       gameText.innerText = `You win!`;
       return;
@@ -78,16 +73,14 @@ function clickSquare(cell) {
   }, 2000);
   setTimeout(() => {
     res = attack();
-    if (res === 0) {
-      gameText.innerText += ` and misses!`;
-    } else {
-      if (typeof res === 'string') {
-        gameText.innerText += ` it's a hit!`;
-        addHit(res);
-      } else {
-        gameText.innerText += ` and sinks your ship!`;
-        resetHunt();
-      }
+    if (res.type === 'miss') gameText.innerText += ` and misses!`;
+    if (res.type === 'hit') {
+      gameText.innerText += ` it's a hit!`;
+      addHit(res.val);
+    }
+    if (res.type === 'sink') {
+      gameText.innerText += ` and sinks your ship!`;
+      resetHunt();
     }
     attachBoard(activePlayer());
     if (gameOver(activePlayer())) {
@@ -95,6 +88,15 @@ function clickSquare(cell) {
       return;
     }
   }, 3250);
+}
+
+function revealShip(ship) {
+  const points = player2().board.findShip(ship);
+  const board = document.querySelector('.grid2');
+  const squares = points.map((id) => board.querySelector(`div[data-id="${id}"]`));
+  squares.forEach((square) => {
+    square.classList.add('ship');
+  });
 }
 
 export function initBoard() {
