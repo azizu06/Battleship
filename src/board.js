@@ -42,8 +42,6 @@ export class Board {
     } else if (square === undefined) {
       this.data[point] = { status: 0 };
       return 0;
-    } else {
-      return -1;
     }
   }
 
@@ -156,6 +154,13 @@ export class Board {
   reset() {
     this.data = {};
     this.squares = 0;
+  }
+
+  checkBounds(point) {
+    const [r, c] = point.split(',').map(Number);
+    if (r > this.rows || r < 0) return 0;
+    if (c > this.cols || c < 0) return 0;
+    return 1;
   }
 
   findShip(ship) {
