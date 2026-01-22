@@ -50,20 +50,16 @@ function getPoint(point) {
 export function attack(point = null) {
   if (point) {
     if (p2.board.getSquare(point)?.status === 1 || p2.board.getSquare(point)?.status === 0)
-      return -1;
+      return { type: 'invalid' };
     const res = p2.board.getAttack(point);
     flipTurn();
     return res;
   } else {
     if (curHits.length > 0) {
       const res = aimBot();
-      if (res !== -1 && res !== undefined) return res;
-      const res2 = shootRandom();
-      return res2;
-    } else {
-      const res = shootRandom();
-      return res;
+      if (res.type !== 'invalid') return res;
     }
+    return shootRandom();
   }
 }
 
@@ -107,7 +103,7 @@ function aimBot() {
 
   if (curHits.length < 2) {
     const target = nextTarget();
-    if (!target) return -1;
+    if (!target) return { type: 'invalid' };
     targets.pop();
     return takeShot(target);
   }
@@ -115,7 +111,7 @@ function aimBot() {
   if (curHits.length > 1) {
     if (pos === 'H') return shootHorizontal();
     if (pos === 'V') return shootVertical();
-    return -1;
+    return { type: 'invalid' };
   }
 }
 
@@ -125,7 +121,7 @@ function shootHorizontal() {
   if (validTarget(`${r},${minC - 1}`)) return takeShot(`${r},${minC - 1}`);
   if (validTarget(`${r},${maxC + 1}`)) return takeShot(`${r},${maxC + 1}`);
   resetHunt();
-  return -1;
+  return { type: 'invalid' };
 }
 
 function shootVertical() {
@@ -134,7 +130,7 @@ function shootVertical() {
   if (validTarget(`${minR - 1},${c}`)) return takeShot(`${minR - 1},${c}`);
   if (validTarget(`${MaxR + 1},${c}`)) return takeShot(`${MaxR + 1},${c}`);
   resetHunt();
-  return -1;
+  return { type: 'invalid' };
 }
 
 function validTarget(point) {
