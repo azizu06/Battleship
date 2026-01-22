@@ -38,7 +38,7 @@ export class Board {
       this.data[point].status = 1;
       square.ship.hit();
       if (square.ship.dead()) return square.ship;
-      return 1;
+      return point;
     } else if (square === undefined) {
       this.data[point] = { status: 0 };
       return 0;
