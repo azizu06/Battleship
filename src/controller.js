@@ -3,8 +3,6 @@ import { Player } from './player';
 
 let p1 = new Player(true, true);
 let p2 = new Player(false, false);
-let p1Ship = null,
-  p2Ship = null;
 let gameRunning = false,
   madeStack = false;
 let shotSet = new Set();
@@ -22,48 +20,25 @@ export function randomBoard() {
     row: 0,
     col: 0,
   };
-  for (let i = 0; i < 5; i++) {
-    if (i == 2) {
-      p1Ship = new Ship(3);
-      p2Ship = new Ship(3);
-      getPoint(pt);
-      while (p1.board.randomCheck(p1Ship, pt.row, pt.col, pt.dir) === false) {
-        getPoint(pt);
-      }
-      p1.board.placeShip(p1Ship, pt.row, pt.col, pt.dir);
-      getPoint(pt);
-      while (p2.board.randomCheck(p2Ship, pt.row, pt.col, pt.dir) === false) {
-        getPoint(pt);
-      }
-      p2.board.placeShip(p2Ship, pt.row, pt.col, pt.dir);
-    } else if (i > 2) {
-      p1Ship = new Ship(i + 1);
-      p2Ship = new Ship(i + 1);
-      getPoint(pt);
-      while (p1.board.randomCheck(p1Ship, pt.row, pt.col, pt.dir) === false) {
-        getPoint(pt);
-      }
-      p1.board.placeShip(p1Ship, pt.row, pt.col, pt.dir);
-      getPoint(pt);
-      while (p2.board.randomCheck(p2Ship, pt.row, pt.col, pt.dir) === false) {
-        getPoint(pt);
-      }
-      p2.board.placeShip(p2Ship, pt.row, pt.col, pt.dir);
-    } else {
-      p1Ship = new Ship(i + 2);
-      p2Ship = new Ship(i + 2);
-      getPoint(pt);
-      while (p1.board.randomCheck(p1Ship, pt.row, pt.col, pt.dir) === false) {
-        getPoint(pt);
-      }
-      p1.board.placeShip(p1Ship, pt.row, pt.col, pt.dir);
-      getPoint(pt);
-      while (p2.board.randomCheck(p2Ship, pt.row, pt.col, pt.dir) === false) {
-        getPoint(pt);
-      }
-      p2.board.placeShip(p2Ship, pt.row, pt.col, pt.dir);
-    }
+  const shipSizes = [2, 3, 3, 4, 5];
+  for (const len of shipSizes) {
+    placeRandom(len, pt);
   }
+}
+
+function placeRandom(len, pt) {
+  const p1Ship = new Ship(len);
+  const p2Ship = new Ship(len);
+  getPoint(pt);
+  while (p1.board.randomCheck(p1Ship, pt.row, pt.col, pt.dir) === false) {
+    getPoint(pt);
+  }
+  p1.board.placeShip(p1Ship, pt.row, pt.col, pt.dir);
+  getPoint(pt);
+  while (p2.board.randomCheck(p2Ship, pt.row, pt.col, pt.dir) === false) {
+    getPoint(pt);
+  }
+  p2.board.placeShip(p2Ship, pt.row, pt.col, pt.dir);
 }
 
 function getPoint(point) {
