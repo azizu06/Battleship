@@ -3,17 +3,17 @@ import { Player } from './player';
 
 let p1 = new Player(true, true);
 let p2 = new Player(false, false);
-let p1Ship,
+let p1Ship = null,
   p2Ship = null;
-let gameRunning,
+let gameRunning = false,
   madeStack = false;
 let shotSet = new Set();
-let curHits,
+let curHits = [],
   targets = [];
 let pos = '';
-let minC,
+let minC = Infinity,
   minR = Infinity;
-let maxC,
+let maxC = -Infinity,
   MaxR = -Infinity;
 
 export function randomBoard() {
@@ -82,22 +82,29 @@ export function attack(point = null) {
   } else {
     if (curHits.length > 0) {
       const res = aimBot();
-      return res;
+      if (res !== -1 && res !== undefined) return res;
+      const res2 = shootRandom();
+      return res2;
     } else {
-      let row = Math.floor(Math.random() * 10);
-      let col = Math.floor(Math.random() * 10);
-      let square = `${row},${col}`;
-      while (!shotSet.has(square)) {
-        row = Math.floor(Math.random() * 10);
-        col = Math.floor(Math.random() * 10);
-        square = `${row},${col}`;
-      }
-      shotSet.add(square);
-      const res = p1.board.getAttack(square);
-      flipTurn();
+      const res = shootRandom();
       return res;
     }
   }
+}
+
+function shootRandom() {
+  let row = Math.floor(Math.random() * 10);
+  let col = Math.floor(Math.random() * 10);
+  let square = `${row},${col}`;
+  while (shotSet.has(square)) {
+    row = Math.floor(Math.random() * 10);
+    col = Math.floor(Math.random() * 10);
+    square = `${row},${col}`;
+  }
+  shotSet.add(square);
+  const res = p1.board.getAttack(square);
+  flipTurn();
+  return res;
 }
 
 function aimBot() {
@@ -115,61 +122,56 @@ function aimBot() {
   }
 
   if (curHits.length < 2) {
-    if (targets.length > 0) {
-      while (!p1.board.checkBounds(targets.at(-1)) && shotSet.has(targets.at(-1))) {
-        targets.pop();
-      }
-      shotSet.add(targets.at(-1));
-      const res = p1.board.getAttack(targets.at(-1));
+    if (targets.length === 0) return -1;
+    while (!p1.board.checkBounds(targets.at(-1)) || shotSet.has(targets.at(-1))) {
       targets.pop();
-      flipTurn();
-      return res;
     }
+    if (targets.length === 0) return -1;
+    shotSet.add(targets.at(-1));
+    const res = p1.board.getAttack(targets.at(-1));
+    targets.pop();
+    flipTurn();
+    return res;
   }
   if (curHits.length === 2) pos = findDir();
   if (curHits.length > 1) {
     if (pos === 'H') {
       const r = Number(curHits[0].split(',')[0]);
       minMaxC();
-      if (
-        p1.board.checkBounds(`${r},${minC - 1}`) &&
-        p1.board.getSquare(`${r},${minC - 1}`)?.ship
-      ) {
+      if (p1.board.checkBounds(`${r},${minC - 1}`) && !shotSet.has(`${r},${minC - 1}`)) {
         shotSet.add(`${r},${minC - 1}`);
         const res = p1.board.getAttack(`${r},${minC - 1}`);
         flipTurn();
         return res;
-      } else if (
-        p1.board.checkBounds(`${r},${minC + 1}`) &&
-        p1.board.getSquare(`${r},${minC + 1}`)?.ship
-      ) {
+      } else if (p1.board.checkBounds(`${r},${maxC + 1}`) && !shotSet.has(`${r},${maxC + 1}`)) {
         shotSet.add(`${r},${minC + 1}`);
-        const res = p1.board.getAttack(`${r},${minC + 1}`);
+        const res = p1.board.getAttack(`${r},${maxC + 1}`);
         flipTurn();
         return res;
+      } else {
+        resetHunt();
+        return -1;
       }
     } else if (pos === 'V') {
       const c = Number(curHits[0].split(',')[1]);
       minMaxR();
-      if (
-        p1.board.checkBounds(`${minR - 1},${c}`) &&
-        p1.board.getSquare(`${minR - 1},${c}`)?.ship
-      ) {
+      if (p1.board.checkBounds(`${minR - 1},${c}`) && !shotSet.has(`${minR - 1},${c}`)) {
         shotSet.add(`${minR - 1},${c}`);
         const res = p1.board.getAttack(`${minR - 1},${c}`);
         flipTurn();
         return res;
-      } else if (
-        p1.board.checkBounds(`${minR + 1},${c}`) &&
-        p1.board.getSquare(`${minR + 1},${c}`)?.ship
-      ) {
+      } else if (p1.board.checkBounds(`${MaxR + 1},${c}`) && !shotSet.has(`${MaxR + 1},${c}`)) {
         shotSet.add(`${minR + 1},${c}`);
-        const res = p1.board.getAttack(`${minR + 1},${c}`);
+        const res = p1.board.getAttack(`${MaxR + 1},${c}`);
         flipTurn();
         return res;
+      } else {
+        resetHunt();
+        return -1;
       }
     }
   }
+  return -1;
 }
 
 function flipTurn() {
@@ -225,9 +227,12 @@ function minMaxR() {
 }
 
 export function resetHunt() {
-  (minC, (minR = Infinity));
-  (maxC, (MaxR = -Infinity));
-  (curHits, (targets = []));
+  minC = Infinity;
+  minR = Infinity;
+  maxC = -Infinity;
+  MaxR = -Infinity;
+  curHits = [];
+  targets = [];
   pos = '';
   madeStack = false;
 }
@@ -243,4 +248,13 @@ export function gameOn() {
 export function resetBoard() {
   p1.board.reset();
   p2.board.reset();
+}
+
+export function restartGame() {
+  resetHunt();
+  resetBoard();
+  shotSet = new Set();
+  gameRunning = false;
+  p1.turn = true;
+  p2.turn = false;
 }
