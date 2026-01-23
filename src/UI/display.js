@@ -49,6 +49,41 @@ export function initBoard() {
   content.appendChild(options);
 }
 
+export function setText(text) {
+  const gameText = document.querySelector('.gameText');
+  if (!gameText) return;
+  gameText.textContent = text;
+}
+
+export function appendText(text) {
+  const gameText = document.querySelector('.gameText');
+  if (!gameText) return;
+  gameText.textContent += text;
+}
+
+export function setGrid(player) {
+  if (player.real) {
+    const board = document.querySelector('.grid1');
+    board.innerHTML = '';
+    const grid = renderGrid(player);
+    board.appendChild(grid);
+  } else {
+    const board = document.querySelector('.grid2');
+    board.innerHTML = '';
+    const grid = renderGrid(player);
+    board.appendChild(grid);
+  }
+}
+
+export function showShip(ship) {
+  const points = player2().board.findShip(ship);
+  const board = document.querySelector('.grid2');
+  const squares = points.map((id) => board.querySelector(`div[data-id="${id}"]`));
+  squares.forEach((square) => {
+    square.classList.add('ship');
+  });
+}
+
 function clearBoard() {
   const content = document.querySelector('.content');
   const board = document.querySelector('.board');
