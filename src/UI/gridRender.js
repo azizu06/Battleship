@@ -1,5 +1,5 @@
-import { activePlayer, attack, gameOver, player2, checkGame } from '../logic/controller';
-import { addHit, resetHunt } from '../logic/cpuHunt';
+import { playTurn } from '../logic/turnFlow';
+import { setGrid, setText, appendText, showShip } from './display';
 
 export function renderGrid(player) {
   const board = document.createElement('div');
@@ -13,8 +13,13 @@ export function renderGrid(player) {
       cellMarker(player, point, square);
       if (!player.real) {
         square.addEventListener('click', (e) => {
-          const cell = e.currentTarget;
-          clickSquare(cell);
+          const cell = e.currentTarget.dataset.id;
+          playTurn(cell, {
+            onMessage: setText,
+            onAppend: appendText,
+            onRender: setGrid,
+            onReveal: showShip,
+          });
         });
       }
       board.appendChild(square);
@@ -34,69 +39,5 @@ function cellMarker(player, point, square) {
     const shot = document.createElement('div');
     shot.classList.add('miss');
     square.appendChild(shot);
-  }
-}
-
-function clickSquare(cell) {
-  const gameText = document.querySelector('.gameText');
-  if (activePlayer() === player2() || checkGame() === false) return;
-  let res = attack(cell.dataset.id);
-  if (res.type === 'invalid') return;
-  gameText.innerText = `You fire a shot...`;
-  setTimeout(() => {
-    attachBoard(activePlayer());
-    if (res.type === 'miss') gameText.innerText += ` and miss!`;
-    if (res.type === 'sink') {
-      gameText.innerText += ` and sunk the enemy's ship!`;
-      revealShip(res.val);
-    }
-    if (res.type === 'hit') gameText.innerText += ` and it's a hit!`;
-    if (gameOver(activePlayer())) {
-      gameText.innerText = `You win!`;
-      return;
-    }
-  }, 750);
-  setTimeout(() => {
-    gameText.innerText = `Enemy fires a shot...`;
-  }, 2000);
-  setTimeout(() => {
-    res = attack();
-    if (res.type === 'miss') gameText.innerText += ` and misses!`;
-    if (res.type === 'hit') {
-      gameText.innerText += ` it's a hit!`;
-      addHit(res.val);
-    }
-    if (res.type === 'sink') {
-      gameText.innerText += ` and sinks your ship!`;
-      resetHunt();
-    }
-    attachBoard(activePlayer());
-    if (gameOver(activePlayer())) {
-      gameText.innerText = `Enemy wins!`;
-      return;
-    }
-  }, 3250);
-}
-
-function revealShip(ship) {
-  const points = player2().board.findShip(ship);
-  const board = document.querySelector('.grid2');
-  const squares = points.map((id) => board.querySelector(`div[data-id="${id}"]`));
-  squares.forEach((square) => {
-    square.classList.add('ship');
-  });
-}
-
-function attachBoard(player) {
-  if (player.real) {
-    const board = document.querySelector('.grid1');
-    board.innerHTML = '';
-    const grid = renderGrid(player);
-    board.appendChild(grid);
-  } else {
-    const board = document.querySelector('.grid2');
-    board.innerHTML = '';
-    const grid = renderGrid(player);
-    board.appendChild(grid);
   }
 }
