@@ -1,4 +1,4 @@
-import { Player } from '../player';
+import { Player } from './player';
 import { aimBot, resetShots, shootRandom, resetHunt, currentHits } from './cpuHunt';
 import { placeRandom } from './shipPlacer';
 
