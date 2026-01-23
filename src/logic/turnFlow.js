@@ -20,9 +20,11 @@ export function playTurn(cell, { onMessage, onAppend, onRender, onReveal }) {
     }
   }, 750);
   setTimeout(() => {
+    if (checkGame() === false) return;
     onMessage(`Enemy fires a shot...`);
   }, 2000);
   setTimeout(() => {
+    if (checkGame() === false) return;
     res = attack();
     if (res.type === 'miss') onAppend(` and misses!`);
     if (res.type === 'hit') {
