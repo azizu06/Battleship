@@ -28,8 +28,8 @@ function makeTargets() {
   madeStack = true;
 }
 
-function nextTarget() {
-  while (targets.length && !validTarget(targets.at(-1))) {
+function nextTarget(player) {
+  while (targets.length && !validTarget(targets.at(-1), player)) {
     targets.pop();
   }
   return targets.length ? targets.at(-1) : null;
@@ -42,7 +42,7 @@ export function aimBot(player, flipTurn) {
     const target = nextTarget();
     if (!target) return { type: 'invalid' };
     targets.pop();
-    return takeShot(target);
+    return takeShot(target, player, flipTurn);
   }
   if (curHits.length === 2) pos = findDir();
   if (curHits.length > 1) {
