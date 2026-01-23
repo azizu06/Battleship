@@ -27,10 +27,10 @@ export function attack(point = null) {
     return res;
   } else {
     if (currentHits().length > 0) {
-      const res = aimBot();
+      const res = aimBot(player1(), flipTurn);
       if (res.type !== 'invalid') return res;
     }
-    return shootRandom();
+    return shootRandom(player1(), flipTurn);
   }
 }
 
