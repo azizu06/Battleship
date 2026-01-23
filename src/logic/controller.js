@@ -14,7 +14,7 @@ export function randomBoard() {
   };
   const shipSizes = [2, 3, 3, 4, 5];
   for (const len of shipSizes) {
-    placeRandom(len, pt);
+    placeRandom(len, pt, player1(), player2());
   }
 }
 
