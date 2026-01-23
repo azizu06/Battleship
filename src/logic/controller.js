@@ -26,11 +26,12 @@ export function attack(point = null) {
     flipTurn();
     return res;
   } else {
+    const ctx = { board: player1().board, flipTurn };
     if (currentHits().length > 0) {
-      const res = aimBot(player1(), flipTurn);
+      const res = aimBot(ctx);
       if (res.type !== 'invalid') return res;
     }
-    return shootRandom(player1(), flipTurn);
+    return shootRandom(ctx);
   }
 }
 
