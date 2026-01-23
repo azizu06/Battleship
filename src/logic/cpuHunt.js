@@ -1,5 +1,3 @@
-import { player1, flipTurn } from './controller';
-
 let madeStack = false;
 let shotSet = new Set();
 let curHits = [],
@@ -10,7 +8,7 @@ let minC = Infinity,
 let maxC = -Infinity,
   MaxR = -Infinity;
 
-export function shootRandom() {
+export function shootRandom(player, flipTurn) {
   let row = Math.floor(Math.random() * 10);
   let col = Math.floor(Math.random() * 10);
   let square = `${row},${col}`;
@@ -19,16 +17,8 @@ export function shootRandom() {
     col = Math.floor(Math.random() * 10);
     square = `${row},${col}`;
   }
-  return takeShot(square);
+  return takeShot(square, player, flipTurn);
 }
-
-function takeShot(point) {
-  shotSet.add(point);
-  const res = player1().board.getAttack(point);
-  flipTurn();
-  return res;
-}
-
 function makeTargets() {
   const [r, c] = curHits[0].split(',').map(Number);
   targets.push(`${r + 1},${c}`);
@@ -45,7 +35,7 @@ function nextTarget() {
   return targets.length ? targets.at(-1) : null;
 }
 
-export function aimBot() {
+export function aimBot(player, flipTurn) {
   if (!madeStack) makeTargets();
 
   if (curHits.length < 2) {
@@ -56,32 +46,43 @@ export function aimBot() {
   }
   if (curHits.length === 2) pos = findDir();
   if (curHits.length > 1) {
-    if (pos === 'H') return shootHorizontal();
-    if (pos === 'V') return shootVertical();
+    if (pos === 'H') return shootHorizontal(player, flipTurn);
+    if (pos === 'V') return shootVertical(player, flipTurn);
     return { type: 'invalid' };
   }
 }
 
-function shootHorizontal() {
+function shootHorizontal(player, flipTurn) {
   const r = Number(curHits[0].split(',')[0]);
   minMaxC();
-  if (validTarget(`${r},${minC - 1}`)) return takeShot(`${r},${minC - 1}`);
-  if (validTarget(`${r},${maxC + 1}`)) return takeShot(`${r},${maxC + 1}`);
+  if (validTarget(`${r},${minC - 1}`, player))
+    return takeShot(`${r},${minC - 1}`, player, flipTurn);
+  if (validTarget(`${r},${maxC + 1}`, player))
+    return takeShot(`${r},${maxC + 1}`, player, flipTurn);
   resetHunt();
   return { type: 'invalid' };
 }
 
-function shootVertical() {
+function shootVertical(player, flipTurn) {
   const c = Number(curHits[0].split(',')[1]);
   minMaxR();
-  if (validTarget(`${minR - 1},${c}`)) return takeShot(`${minR - 1},${c}`);
-  if (validTarget(`${MaxR + 1},${c}`)) return takeShot(`${MaxR + 1},${c}`);
+  if (validTarget(`${minR - 1},${c}`, player))
+    return takeShot(`${minR - 1},${c}`, player, flipTurn);
+  if (validTarget(`${MaxR + 1},${c}`, player))
+    return takeShot(`${MaxR + 1},${c}`, player, flipTurn);
   resetHunt();
   return { type: 'invalid' };
 }
 
-function validTarget(point) {
-  return point && player1().board.checkBounds(point) && !shotSet.has(point);
+function validTarget(point, player) {
+  return point && player.board.checkBounds(point) && !shotSet.has(point);
+}
+
+function takeShot(point, player, flipTurn) {
+  shotSet.add(point);
+  const res = player.board.getAttack(point);
+  flipTurn();
+  return res;
 }
 
 function findDir() {
