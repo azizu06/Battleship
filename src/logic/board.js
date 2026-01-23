@@ -8,7 +8,7 @@ export class Board {
 
   placeShip(ship, row, col, dir) {
     if (dir === 'x') {
-      if (!this.checkSquares(ship, row, col, dir)) return 0;
+      if (!this.checkSquares(ship, row, col, dir)) return false;
       for (let i = 0; i < ship.length; i++) {
         const point = `${row},${col + i}`;
         this.data[point] = {
@@ -18,7 +18,7 @@ export class Board {
         this.squares += 1;
       }
     } else {
-      if (!this.checkSquares(ship, row, col, dir)) return 0;
+      if (!this.checkSquares(ship, row, col, dir)) return false;
       for (let i = 0; i < ship.length; i++) {
         const point = `${row + i},${col}`;
         this.data[point] = {
@@ -28,7 +28,24 @@ export class Board {
         this.squares += 1;
       }
     }
-    return 1;
+    return true;
+  }
+
+  checkSquares(ship, row, col, dir) {
+    if (dir === 'x') {
+      for (let i = 0; i < ship.length; i++) {
+        const point = `${row},${col + i}`;
+        const cols = col + i;
+        if (this.data[point]?.ship !== undefined || cols > this.cols) return false;
+      }
+    } else {
+      for (let i = 0; i < ship.length; i++) {
+        const point = `${row + i},${col}`;
+        const rows = row + i;
+        if (this.data[point]?.ship !== undefined || rows > this.rows) return false;
+      }
+    }
+    return true;
   }
 
   getAttack(point) {

@@ -1,3 +1,3 @@
 import './styles.css';
-import { initBoard } from './display';
+import { initBoard } from './UI/display';
 initBoard();
